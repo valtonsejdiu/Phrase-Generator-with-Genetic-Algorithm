@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -16,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Buttons implements ActionListener{
 	DefaultTableModel model;//Tabela ne te cilen vendosen gjeneratat
+	DefaultListModel l;//Lista me fjalite me te mira ne gjenerata
 	JTextField p;//Fusha tekstuale ku vendoset targeti
 	JTextField m;//Fusha tekstuale ku vendoset vlera e mutacionit
 	JTextField n;//Fusha tekstuale ku vendoset numri i popullates
@@ -37,9 +39,10 @@ public class Buttons implements ActionListener{
 	 * @param g: Labele ku vendoset numri i gjeneratave
 	 * @param mo: Tabela ku vendosen gjeneratat
 	 */
-	public Buttons(JTextField phrase, JTextField mutation, JTextField popNum,JLabel b,JLabel a,JLabel g,DefaultTableModel mo) {
+	public Buttons(JTextField phrase, JTextField mutation, JTextField popNum,JLabel b,JLabel a,JLabel g,DefaultTableModel mo,DefaultListModel list) {
 		p=phrase;
 		model=mo;
+		l=list;
 		m=mutation;
 		n=popNum;
 		best=b;
@@ -57,19 +60,25 @@ public class Buttons implements ActionListener{
 		// TODO Auto-generated method stub
 		if(e.getSource()==start) {
 
+l.clear();
+            model.setRowCount(0);
+
 			pop.setPhrase(prepPhrase());//Vendosja e targetit ne algoritem
 			pop.setMutation(prepMutation());//Vendosja e vleres se mutacionit ne algoritem
 			pop.setPopullationNumber(prepPopulation());//Vendosja e nurmit te popullates ne algoritem
 			pop.firstGen();
 
 			while (go) {
-				pop.naturalSelection();
+            
+            
+				
+            pop.naturalSelection();
 				pop.generate();
 				pop.calcFitness();
 				pop.evaluate();
 				best.setText("Best Phrase: "+pop.getBestPhrase());
 				best.revalidate();
-				//System.out.println(pop.getBestPhrase());
+				l.addElement(pop.getBestPhrase()+" - "+pop.getGenerations()+" - "+new DecimalFormat("##.##").format(pop.getAverageFitness()));
 				avg.setText("Average fitness: "+new DecimalFormat("##.##").format(pop.getAverageFitness()));
 				gen.setText("Total Generatios: "+pop.getGenerations());
 
@@ -92,17 +101,22 @@ public class Buttons implements ActionListener{
 			}
 
 		}if(e.getSource()==reset) {
-			model.setRowCount(0);
+         model.setRowCount(0);
+			l.clear();
 			p.setText("");
 			m.setText("");
 			n.setText("");
+         best.setText("Best Phrase: ");
+         avg.setText("Average fitness: ");
+   		gen.setText("Total Generatios: ");
+
 		}
 	}
 	/**
 	 * Metode e cila e pergadite tekstin e marre nga fusha tekstuale e targetit per largimin e problemeve te inputit
 	 * @return kthen Stringun e perpunuar
 	 */
-	public String prepPhrase() {
+	private String prepPhrase() {
 		return p.getText().trim();
 
 	}
@@ -110,7 +124,7 @@ public class Buttons implements ActionListener{
 	 * Metode e cila e pergadite tekstin e marre nga fusha tekstuale e vleres se mutacionit per largimin e problemeve te inputit
 	 * @return kthen nje variabel te tipit double qe permbane vleren e mutacionit
 	 */
-	public double prepMutation() {
+	private double prepMutation() {
 		String mRate = m.getText().trim();
 		double mutation = 0.0;
 		try {
@@ -126,7 +140,7 @@ public class Buttons implements ActionListener{
 	 * Metode e cila e pergadite tekstin e marre nga fusha tekstuale numrit te popullit per largimin e problemeve te inputit
 	 * @return kthen nje variabel te tipit int qe permbane numrin e Popullates
 	 */
-	public int prepPopulation() {
+	private int prepPopulation() {
 		String popNum = n.getText().trim();
 		int population = 0;
 		try {
