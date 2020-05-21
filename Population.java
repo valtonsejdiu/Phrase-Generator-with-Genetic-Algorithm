@@ -126,6 +126,7 @@ public class Population {
 
 	public void reset() {
 		this.finished=false;
+      this.generations=0;
 	}
 	public int getGenerations() {
 		return this.generations;
@@ -143,7 +144,6 @@ public class Population {
 		return total / this.population.length;
 	}
 
-	
 	public ArrayList<String[]> allPhrases() {
 		ArrayList<String[]> everything = new ArrayList<>();
 
